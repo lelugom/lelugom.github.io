@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "utf-8">
+    <meta http-equiv = "X-UA-Compatible" content = "IE=edge">
+    <meta name = "viewport" content = "width=device-width, initial-scale=1">
+    <title>Oauth Twitter acces in Perl</title>
+    <link rel="shortcut icon" href="https://images.unsplash.com/photo-1473970367503-7d7f8d1bf998?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=80e38058ebf664487e8f1d436580abf6">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <style type="text/css">
+      body {
+        background-image: url("https://images.unsplash.com/photo-1435777940218-be0b632d06db?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;s=18cb0153c5365100ee6b46d1180c5f1d");
+        background-repeat: repeat;
+        background-size: cover;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        text-align: justify;
+      }
+      h2 {
+        text-align: center !important;
+      }
+      .col-xs-10 {
+        background-color: white;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class = "container">
+      <div class = "row">
+        <div class="col-xs-10 col-xs-offset-1">
+        <h2>Twitter REST API from Perl</h2>
+        </div><div class="col-xs-10 col-xs-offset-1">
+        <p>&nbsp;</p>
+        <p>Twitter provides services to access information from the site through REST APIs. The HTTP process makes GET and POST requests in order to read or write data, and the Twitter endpoint sends responses to those requests using the JSON format. All requests should use Oauth authentication in order to identify particular users and applications accessing Twitter services.</p>
+
+        <p>This script will show you how to use the user authentication model to access the Twitter API, which is based on the open protocol Oauth 1.0. First, go to <a href="https://apps.twitter.com/">apps.twitter.com</a> and login with your username and password. Then, click on the <var>Create New App</var> button. Name your app appropriately and fill in the requested data. Access your newly created application and click on the <var>Keys and Access Tokens</var> tab. You will need four keys from this tab
+
+          <ul>
+            <li>Consumer Key (API Key)</li>
+            <li>Consumer Secret (API Secret)</li>
+            <li>Access Token</li>
+            <li>Access Token Secret</li>
+          </ul>
+        </p>
+
+        <p>Make sure you don't share neither your <var>Consumer Secret</var> nor your <var>Access Token Secret</var> with anyone. You can download the script from <a href="https://github.com/lelugom/scripts/blob/master/perl_oauth_twitter.pl">perl_oauth.pl <span class="glyphicon glyphicon-download-alt"></span></a> and modify the keys accordingly. Let's import the modules for the script and define constants with the four keys from the <a href="https://apps.twitter.com/">apps.twitter.com</a> page. Include the base url to access the REST API as well</p>
+
+          <pre>
+  #!/usr/bin/perl
+  use strict;
+  use warnings;
+  use URI::Escape;
+  use JSON::PP;
+  use Digest::MD5 qw(md5_hex);
+  use Digest::SHA qw(hmac_sha1_base64);
+  use Time::HiRes qw(time);
+
+  use constant {
+    CONSUMER_KEY => "Consumer key",
+    SECRET_KEY   => "Consumer secret",
+    OAUTH_TOKEN  => "Access token",
+    SECRET_TOKEN => "Access token secret",
+    TWITTER_API  => "https://api.twitter.com/1.1/statuses/",
+  };
+          </pre>
+
+        <p>Declare a function with three parameters. A string for the type of request, a string for the url to be accessed and a hash for the parameters of the HTTP request. Declare local variables including a hash with OAuth parameters. The function <code>md5_hex</code> will be used for computing a unique random value for each request. This value will be stored in the variable <code>oauth_nonce</code>, its parameters are a random number concatenated to the result of the function <code>time</code> from Time::HiRes module. The HTTP data hash will be merged with the OAuth parameters for the subsequent computations</p>
+        <pre>
+  sub twitterOauth {
+    my ($req, $url, %getData) = @_;
+    my $secret_token = SECRET_TOKEN;
+    my $secret_key = SECRET_KEY;
+    my ($oauth_signature, $base_signature, $signing_key, $authorization, $response,
+      $parameter) =  ('', '', '', '', '', '');
+    my %oauth_parameters = (
+      "oauth_consumer_key"     => CONSUMER_KEY,
+      "oauth_nonce"            => md5_hex(int time() . int rand(~0)),
+      "oauth_signature_method" => "HMAC-SHA1",
+      "oauth_timestamp"        => int time(),
+      "oauth_token"            => OAUTH_TOKEN,
+      "oauth_version"          => "1.0",
+      );
+
+    $url = TWITTER_API . $url;
+    %oauth_parameters = (%oauth_parameters, %getData);
+        </pre>
+
+        <p>The signature method <var>HMAC-SHA1</var> will be used for computing the Oauth signature, this method is provided by the function <code>hmac_sha1_base64</code> in the module Digest::SHA. First, create a string separated by &amp; characters containing all the data in the Oauth parameters hash, using the <code>key=value</code> format. Parameter keys should be sorted in alphabetical order. Then, create the base signature string by concatenating the HTTP method in uppercase with the percent encoded URL and the percent encoded string for oauth parameters, joining the strings with the &amp; character. Create the signing key by concatenating the <var>Consumer Secret</var> with the <var>Access token secret</var>, joining the strings with the &amp; character. Remember to percent encode each string before concatenation. Now, compute the oauth signature with the base signature and the signing key. It's important to know that CPAN digest modules don't pad the computed base64 signature by convention. Therefore, manually pad the computed signature with the code from the <a href="http://search.cpan.org/~mshelor/Digest-SHA-5.96/lib/Digest/SHA.pm#PADDING_OF_BASE64_DIGESTS">CPAN documentation</a> to avoid authentication errors when accessing the API</p>
+        <pre>
+    foreach $parameter (sort keys %oauth_parameters){
+      $base_signature .= "$parameter=$oauth_parameters{$parameter}&"
+    }
+    chop($base_signature); #remove trailing & character
+
+    $base_signature = uc($req) . '&' . uri_escape($url) . '&' . uri_escape($base_signature);
+    $signing_key = uri_escape($secret_key) . '&' . uri_escape($secret_token);
+    $oauth_signature = hmac_sha1_base64($base_signature, $signing_key);
+    # Pad base64 output, CPAN Digest modules don't pad by convention
+    while (length($oauth_signature) % 4) {
+      $oauth_signature .= '=';
+    }
+        </pre>
+        <p>Now we are ready to build the authorization string for the HTTP request. Use the <code>key=value</code> format and remember to percent encode each value. </p>
+        <pre>
+    $authorization = 'OAuth oauth_consumer_key="' . uri_escape($oauth_parameters{"oauth_consumer_key"}) .
+      '", oauth_nonce="' . uri_escape($oauth_parameters{"oauth_nonce"}) .
+      '", oauth_signature="' . uri_escape($oauth_signature) .
+      '", oauth_signature_method="' . uri_escape($oauth_parameters{"oauth_signature_method"}) .
+      '", oauth_timestamp="' . uri_escape($oauth_parameters{"oauth_timestamp"}) .
+      '", oauth_token="' . uri_escape($oauth_parameters{"oauth_token"}) .
+      '", oauth_version="' . uri_escape($oauth_parameters{"oauth_version"}) . '"';
+        </pre>
+        <p>Let's use curl to access the Twitter API, using the --header option to pass the authorization string. Then, return the JSON formatted string received from API server.</p>
+        <pre>
+    $parameter = join('&', map{"$_=$getData{$_}"} keys %getData);
+    $parameter = "--" . lc($req) . " \'$url\' --data \'$parameter\' --header \'Authorization: $authorization\'";
+    $response = curl($parameter);
+
+    return $response;
+  }
+
+  sub curl {
+    my ($curl_args) = @_;
+    my $response;
+
+    # System call for curl
+    $curl_args = 'curl -k --silent -A "' .
+      'Mozilla/5.0 (Windows NT x.y; Win64; x64; rv:10.0) Gecko/20100101 Firefox/10.0" ' .
+      "$curl_args 2>&1";
+    $response = qx{$curl_args};
+    die "Unable to download webpage $curl_args " if ( $? == -1 );
+
+    return $response;
+  }
+        </pre>
+        <p> As an example, here is the code to download the last 12 tweets from the <a href="https://twitter.com/twitterdev">@twitterdev</a> account and print the JSON formatted string in the standard output. The <a href="https://dev.twitter.com/rest/reference/get/statuses/user_timeline"> GET statuses/user_timeline </a> HTTP request will be send. Remember to use JSON::PP module to decode the returned string for you particular needs.
+        </p>
+        <pre>
+  print twitterOauth("GET", "user_timeline.json", (screen_name => "twitterdev", count => 12));
+        </pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </body>
+</html>
