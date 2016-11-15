@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Prueba de código Front End</title>
+    <link rel="shortcut icon" href="https://images.unsplash.com/photo-1473970367503-7d7f8d1bf998?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=80e38058ebf664487e8f1d436580abf6">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <style type="text/css">
+      body {
+        background-image: url("https://images.unsplash.com/photo-1468476775582-6bede20f356f");
+        background-repeat: no-repeat;
+        background-size: cover;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+      }
+      #title {
+        color: white;
+        border-radius: 5px;
+        margin-top: 10px;
+        text-align: center;
+        opacity: 0.8;
+      }
+      #formGame {
+        background-color: white;
+        opacity: 0.9;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+      #gamePane {
+        border-radius: 3px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        background-color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 id="title">Prueba de código <br/> Front End</h1>
+
+      <!-- New game form -->
+      <form class="form-inline col-xs-12" id="formGame">
+        <div class="form-group">
+          <label for="rows">Filas</label>
+          <input type="number" class="form-control" id="rows" placeholder="Número de filas"/>
+        </div>
+        <div class="form-group">
+          <label for="columns">Columnas</label>
+          <input type="number" class="form-control" id="columns" placeholder="Número de columnas"/>
+        </div>
+        <div class="form-group">
+          <label for="columns">Minas</label>
+          <input type="number" class="form-control" id="mines" placeholder="Número de minas"/>
+        </div>
+        <button type="submit" class="btn btn-info" id="newGame">Nuevo juego</button>
+      </form>
+
+      <!-- Game pane -->
+      <div id="gamePane">
+        <p> </p>
+        <div class="col-xs-12"><h2><kbd>0000</kbd></h2></div>
+        <div class="col-xs-12 alert alert-info hidden">Click para destapar celda<br/>Click derecho para marcar celda</div>
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+
+    </script>
+  </body>
+</html>
