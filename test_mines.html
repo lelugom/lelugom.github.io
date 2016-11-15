@@ -33,10 +33,11 @@
         border-radius: 5px;
       }
       #gamePane {
+        background-color: gray;
+        opacity: 0.9;
         border-radius: 3px;
         margin-top: 10px;
         margin-bottom: 10px;
-        background-color: gray;
       }
     </style>
   </head>
@@ -62,10 +63,9 @@
       </form>
 
       <!-- Game pane -->
-      <div id="gamePane">
-        <p> </p>
-        <div class="col-xs-12"><h2><kbd>0000</kbd></h2></div>
-        <div class="col-xs-12 alert alert-info hidden">Click para destapar celda<br/>Click derecho para marcar celda</div>
+      <div class="col-xs-12" id="gamePane">
+        <h3>Segundos: <kbd>0000</kbd></h3>
+        <div class="alert alert-info">Click para destapar celda<br/>Click derecho para marcar celda</div>
       </div>
     </div>
 
