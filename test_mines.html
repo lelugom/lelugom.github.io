@@ -33,17 +33,50 @@
         border-radius: 5px;
       }
       #gamePane {
-        background-color: gray;
-        opacity: 0.9;
+        background-color: #8F8F8F;
         border-radius: 3px;
         margin-top: 10px;
         margin-bottom: 10px;
+        padding: 10px;
+      }
+      #minePane {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      #alertPane {
+        margin-top: 10px;
+        font-weight: bold;
+        text-align: center;
+      }
+      .tile {
+        border: 5px outset;
+        display: table-cell;
+        background-color: #8F8F8F;
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: bold;
+        vertical-align: middle;
+      }
+      .btnPane {
+        display: table-row;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      #elapsed, #markb, #unmarkb {
+        display: table-cell;
+        margin-left: 10px;
+      }
+      input {
+        margin-bottom: 5px;
+      }
+      .hidden {
+        display: none;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1 id="title">Prueba de código <br/> Front End</h1>
+      <h1 id="title">Buscaminas</h1>
 
       <!-- New game form -->
       <form class="form-inline col-xs-12" id="formGame">
@@ -64,8 +97,13 @@
 
       <!-- Game pane -->
       <div class="col-xs-12" id="gamePane">
-        <h3>Segundos: <kbd>0000</kbd></h3>
-        <div class="alert alert-info">Click para destapar celda<br/>Click derecho para marcar celda</div>
+        <div class="btnPane">
+          <kbd id="elapsed">Tiempo: 0</kbd>
+          <button type="button" class="btn btn-success" id="markb">Marcar</button>
+          <button type="button" class="btn btn-success" id="unmarkb">Desmarcar</button>
+        </div>
+        <div class="alert alert-info hidden" id="alertPane"></div>
+        <div id="minePane"></div>
       </div>
     </div>
 
@@ -74,7 +112,190 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
     <script type="text/javascript">
+      var start = null, ctiles = 90;
+      var mark = false, unmark = false;
+      var rows = 10, columns = 10, mines = 10;
+      var matrix = [];
+      createPane();
 
+      // Events
+      $("#newGame").click(function(event){
+        if(validateForm(event)){
+          createPane();
+        }
+      });
+      $("#markb").click(function(event){
+        event.preventDefault();
+        mark = true;
+      });
+      $("#unmarkb").click(function(event){
+        event.preventDefault();
+        unmark = true;
+      });
+      $(document).on("click", ".tile", function(event){
+        event.preventDefault();
+        clearTile(this);
+      });
+
+      // Update time elapsed
+      setInterval(function() {
+        if(start){
+          $("#elapsed").html("Tiempo: " + Math.floor((Date.now() - start) / 1000) + "s");
+        }
+      }, 1000);
+
+      // Validate form
+      function validateForm(event){
+        event.preventDefault();
+        var valid = true;
+
+        start = null;
+        $("#elapsed").html("Tiempo: 0 s");
+        $("#minePane").empty();
+        $("#alertPane").empty();
+        $("#alertPane").addClass("hidden");
+
+        rows = $("#rows").val();
+        columns = $("#columns").val();
+        mines = $("#mines").val();
+        var regex = /^\d+$/;
+        if(!rows.match(regex) || !columns.match(regex) || !mines.match(regex) || mines >= rows * columns){
+          printError(" Error validando datos. Ingresa número válido de filas, columnas y minas");
+          valid = false;
+        }
+        return valid;
+      }
+
+      // Print error message on alertPane
+      function printError(str){
+        $("#alertPane").removeClass();
+        $("#alertPane").addClass("alert alert-danger");
+        $("#alertPane").html('<span class="glyphicon glyphicon-exclamation-sign"></span> ' + str);
+      }
+
+      // Create mine pane
+      function createPane(){
+        var width = Math.floor($("#minePane").width() / columns);
+        matrix = [];
+        ctiles = rows * columns - mines;
+
+        for(var i = 0; i < rows; i++){
+          matrix[i] = [];
+          var row = document.createElement("div");
+          $(row).css("display", "table-row");
+          for(var j = 0; j < columns; j++){
+            matrix[i][j] = 0;
+            var tile = document.createElement("div");
+            $(tile).addClass("tile");
+            $(tile).attr("id", i + '_' + j);
+            $(tile).width(width);
+            $(tile).height(width);
+            $(tile).html("");
+            $(row).append(tile);
+          }
+          $("#minePane").append(row);
+        }
+        populateMatrix();
+      }
+
+      // Create mines in the matrix
+      function populateMatrix(){
+        var m = 0, ri, rj;
+        while(m < mines){
+          ri = Math.floor(Math.random() * rows);
+          rj = Math.floor(Math.random() * columns);
+          if(matrix[ri][rj] != 9){
+            matrix[ri][rj] = 9;
+            m++;
+            for(var i = ri - 1; i <= ri + 1; i++){
+              for(var j = rj - 1; j <= rj + 1; j++){
+                if(i >= 0 && j >= 0 &&  i < rows && j < columns && matrix[i][j] != 9){
+                  matrix[i][j] += 1;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Print mines and report game end
+      function printMines(){
+        for(var i = 0; i < rows; i++){
+          for(var j = 0; j < columns; j++){
+            if(matrix[i][j] == 9){
+              $('#' + i + '_' + j).html('<span class="glyphicon glyphicon-asterisk"></span>');
+            }
+          }
+        }
+        printError(' Ouch ... el juego ha terminado <span class="glyphicon glyphicon-thumbs-down"></span>');
+        start = null;
+      }
+
+      // Process click on tile
+      function clearTile(element){
+        // Start time counter and compute cleared tiles
+        if(start === null) {
+          start = Date.now();
+        }
+
+        // Mark tile
+        if(mark){
+          if($(element).css("border").includes('5px outset')){
+            $(element).empty();
+            $(element).html('<span class="glyphicon glyphicon-flag"></span>');
+          }
+          mark = false;
+          return;
+        }
+        // Unmark tile
+        if($(element).html().includes('<span class="glyphicon glyphicon-flag"></span>')){
+          if(unmark){
+            $(element).empty();
+            unamark = false;
+          }
+          return;
+        }
+        // Game finished
+        if(ctiles == 0){ return; }
+
+        // Clear clicked and adjacent tiles
+        var i, j;
+        var id = $(element).attr("id");
+        var index = id.match(/\d+/g);
+        if(index.length == 2){
+          i = parseInt(index[0]); j = parseInt(index[1]);
+        }
+        if(matrix[i][j] == 9){
+          printMines();
+        } else {
+          for(var ai = i - 1; ai <= i + 1; ai++){
+            for(var aj = j - 1; aj <= j + 1; aj++){
+              id = '#' + ai + '_' + aj;
+              if(ai >= 0 && aj >= 0 &&  ai < rows && aj < columns
+                && matrix[ai][aj] != 9
+                && !$(id).html().includes('<span class="glyphicon glyphicon-flag"></span>')
+                && $(id).css("border").includes('5px outset')){
+                  $(id).css("border", "5px inset");
+                  $(id).css("background-color", "#AFAFAF");
+                  if(matrix[ai][aj] > 0){
+                    $(id).html(matrix[ai][aj]);
+                  }
+                  ctiles--;
+              }
+            }
+          }
+          // All cleared
+          if(ctiles == 0){
+            $("#elapsed").html("Tiempo: 0 s");
+            $("#alertPane").removeClass();
+            $("#alertPane").addClass("alert alert-success");
+            $("#alertPane").html('Ganaste! Empleaste ' + Math.floor((Date.now() - start) / 1000)
+              + ' segundos <span class="glyphicon glyphicon-thumbs-up"></span>');
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            start = null;
+          }
+        }
+      }
     </script>
   </body>
 </html>
