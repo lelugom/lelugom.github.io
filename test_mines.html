@@ -18,6 +18,9 @@
         background-size: cover;
         font-family: "Comic Sans MS", cursive, sans-serif;
       }
+      input {
+        margin-bottom: 3px;
+      }
       #title {
         color: white;
         border-radius: 5px;
@@ -66,9 +69,6 @@
         display: table-cell;
         margin-left: 10px;
       }
-      input {
-        margin-bottom: 5px;
-      }
       .hidden {
         display: none;
       }
@@ -79,7 +79,7 @@
       <h1 id="title">Buscaminas</h1>
 
       <!-- New game form -->
-      <form class="form-inline col-xs-12" id="formGame">
+      <form class="form-inline clearfix" id="formGame">
         <div class="form-group">
           <label for="rows">Filas</label>
           <input type="number" class="form-control" id="rows" placeholder="Número de filas"/>
@@ -92,11 +92,11 @@
           <label for="columns">Minas</label>
           <input type="number" class="form-control" id="mines" placeholder="Número de minas"/>
         </div>
-        <button type="submit" class="btn btn-info" id="newGame">Nuevo juego</button>
+        <button type="submit" class="btn btn-info pull-right" id="newGame">Nuevo juego</button>
       </form>
 
       <!-- Game pane -->
-      <div class="col-xs-12" id="gamePane">
+      <div class="col-md-4 col-md-offset-4" id="gamePane">
         <div class="btnPane">
           <kbd id="elapsed">Tiempo: 0</kbd>
           <button type="button" class="btn btn-success" id="markb">Marcar</button>
@@ -196,6 +196,7 @@
           $("#minePane").append(row);
         }
         populateMatrix();
+        $("html, body").animate({ scrollTop: $(document).height() }, "slow");
       }
 
       // Create mines in the matrix
@@ -229,6 +230,7 @@
         }
         printError(' Ouch ... el juego ha terminado <span class="glyphicon glyphicon-thumbs-down"></span>');
         start = null;
+        $("html, body").animate({ scrollTop: 0 }, "slow");
       }
 
       // Process click on tile
