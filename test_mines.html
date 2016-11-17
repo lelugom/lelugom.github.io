@@ -235,7 +235,10 @@
 
       // Process click on tile
       function clearTile(element){
-        // Start time counter 
+        // Game finished
+        if(ctiles == 0){ return; }
+        
+        // Start time counter
         if(start === null) {
           start = Date.now();
         }
@@ -257,8 +260,6 @@
           }
           return;
         }
-        // Game finished
-        if(ctiles == 0){ return; }
 
         // Clear clicked and adjacent tiles
         var i, j;
