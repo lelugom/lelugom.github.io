@@ -20,11 +20,24 @@
       h2 {
         text-align: center !important;
       }
-      .col-xs-12 {
+      .post {
         background-color: white;
-        margin-top: 60px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+      .index {
+        background-color: white;
         margin-bottom: 10px;
         border-radius: 3px;
+        padding: 10px;
+        overflow-y: auto;
+        /*height: 500px;*/
+      }
+      #mainPane {
+        margin-top: 60px;
+      }
+      .hidden {
+        visibility: hidden;
       }
       .twitter-follow-button {
           margin: 10px 10px 0 10px;
@@ -32,7 +45,8 @@
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#index-collapse" aria-expanded="false">
@@ -53,11 +67,16 @@
         </div>
       </div>
     </nav>
-    <div class = "container">
-      <div class="col-xs-12">
-        <h2>Twitter REST API from Perl</h2>
+
+    <!-- Main panel -->
+    <div class="container" id="mainPane"></div>
+
+    <!-- Posts -->
+    <div class = "hidden">
+      <div class="post" id="20161107">
+        <h2>Access Twitter REST API from Perl</h2>
         <p>&nbsp;</p>
-        <p>Twitter provides services to access information from the site through REST APIs. The HTTP process makes GET and POST requests in order to read or write data, and the Twitter endpoint sends responses to those requests using the JSON format. All requests should use Oauth authentication in order to identify particular users and applications accessing Twitter services.</p>
+        <p class="intro">Twitter provides services to access information from the site through REST APIs. The HTTP process makes GET and POST requests in order to read or write data, and the Twitter endpoint sends responses to those requests using the JSON format. All requests should use Oauth authentication in order to identify particular users and applications accessing Twitter services.</p>
 
         <p>This script will show you how to use the user authentication model to access the Twitter API, which is based on the open protocol Oauth 1.0. First, go to <a href="https://apps.twitter.com/">apps.twitter.com</a> and login with your username and password. Then, click on the <var>Create New App</var> button. Name your app appropriately and fill in the requested data. Access your newly created application and click on the <var>Keys and Access Tokens</var> tab. You will need four keys from this tab
 
@@ -162,8 +181,74 @@
         <p> As an example, here is the code to download the last 12 tweets from the <a href="https://twitter.com/twitterdev">@twitterdev</a> account and print the JSON formatted string in the standard output. The <a href="https://dev.twitter.com/rest/reference/get/statuses/user_timeline"> GET statuses/user_timeline </a> HTTP request will be send. Remember to use JSON::PP module to decode the returned string for you particular needs.
         </p>
         <pre>
-  print twitterOauth("GET", "user_timeline.json", (screen_name => "twitterdev", count => 12));
-        </pre>
+  print twitterOauth("GET", "user_timeline.json", (screen_name => "twitterdev", count => 12)); </pre>
+      </div>
+
+      <div class="post" id="20161205">
+        <h2>Convert HP LJ1000 into a network printer with OpenWrt</h2>
+        <p>&nbsp;</p>
+        <p class="intro">The HP LaserJet 1000 is a black and white printer which comes with a USB cable to connect directly to a port in your computer. Nevertheless, if you have a router with OpenWrt installed and a spare USB port on it, you can connect your USB printer to the router and share it in your Local Area Network to allow access from any Windows or Linux computer.</p>
+
+        <p>To make this happen, you need both a firmware file for the printer and a printer server. The drivers for the printer send the firmware file every time the printer powers on, so the router should do the same. To get the printer firmware file, we will use <a href="http://foo2zjs.rkkda.com/">foo2zjs</a>, an open source printer driver which supports HP LJ1000 printer. So, let's download the driver and unpack it </p>
+
+        <pre>
+  $ wget -O foo2zjs.tar.gz http://foo2zjs.rkkda.com/foo2zjs.tar.gz
+  $ tar zxf foo2zjs.tar.gz
+  $ cd foo2zjs</pre>
+
+        <p>Compile and install it </p>
+        <pre>
+  $ make
+  $ ./getweb 1000
+  $ sudo make install</pre>
+
+        <p>Now, under the foo2zjs folder. you will find the file <var>sihp1000.dl</var>, which is the firmware file that should be sent to the printer every time it powers on. Store this file in your router file system under the folder <code>/etc/config</code> to preserve it whenever you update the router with the <code>sysupgrade</code> command. We will use the <a href="http://man.cx/p910nd">p910nd</a> printer server, a small non-spooling printer daemon intended for disk-less linux hosts, which copies any data received on the port it is listening on to the corresponding printer port. Let's install the printer server and the USB printing module <code>kmod-usb-printer</code></p>
+        <pre>
+  $ opkg update
+  $ opkg install kmod-usb-printer p910nd</pre>
+
+        <p>Modify firewall configuration on <code>/etc/config/firewall</code> to accept packets on on TCP port 9100</p>
+        <pre>
+  # Allow attached network printer hplj1000
+  config 'rule'
+      option 'src' 'lan'
+      option 'proto' 'tcp'
+      option 'dest_port' '9100'
+      option 'target' 'ACCEPT'</pre>
+
+        <p>Check the file <code>/etc/config/p910nd</code> has the following information, assuming your router IP is <var>192.168.1.1</var></p>
+        <pre>
+  config p910nd
+    	option device        /dev/usb/lp0
+    	option port          0
+    	option bidirectional 1
+    	option enabled       1
+    	option bind          192.168.1.1</pre>
+
+        <p>We need a script to send the firmware file to the printer any time it powers on. So, let's create the script <code>/etc/hotplug.d/usb/hplj1000</code>. Remember that we store the firmware file <var>sihp1000.dl</var> under the folder <code>/etc/config</code> </p>
+        <pre>
+  #!/bin/sh
+
+  FIRMWARE="/etc/config/sihp1000.dl"
+
+  if [ "$PRODUCT" = "3f0/517/120" ]
+  then
+          if [ "$ACTION" = "add" -a "$DEVTYPE" = "usb_interface" ]
+          then
+                  logger "Sending firmware to HP LJ1000 printer..."
+                  cat $FIRMWARE > /dev/usb/lp0
+                  logger "done."
+          fi
+  fi</pre>
+
+        <p>Start and enable the printer daemon</p>
+        <pre>
+  /etc/init.d/p910nd start
+  /etc/init.d/p910nd enable</pre>
+
+        <p>At this point, the printer daemon is up and running. The next step is to install the printer on the computer. Depending on the OS on your computer, follow the instructions <a href="https://wiki.openwrt.org/doc/howto/p910nd.server#configuration_part_2_the_clients">here</a>, and use your router IP address and the port <var>9100</var>.</p>
+
+        <p>Finally, if you need to spool jobs, there is an easy workaround. After installing the network printer on your computer, go to <a href="https://www.google.com/cloudprint">Google cloud print</a> and add the printer using the <var>Add a Classic Printer</var> option. Then, share this printer to the users you need. This way, any person with the shared printer can send print jobs, and they will be sent to the printer whenever chrome runs on your computer. Remember to synchronize chrome to your Google account for the spooling to work.</p>
       </div>
     </div>
 
@@ -189,6 +274,56 @@
         return t;
       }(document, "script", "twitter-wjs"));
 
+      // Fix some document elements
+      var gridClass = "col-xs-12 col-md-offset-2 col-md-8";
+      $(".post").addClass(gridClass);
+      $(".post").each(function() {
+        $(this).find('a').each(function(){
+          $(this).attr("target", "_blank");
+        });
+      });
+
+      // Create posts index in main panel
+      var index = document.createElement('div');
+      $(index).addClass(gridClass + ' index');
+      $(".post").each(function() {
+        // Assemble entry
+        var entry, entryTitle, entryIntro;
+
+        entry = document.createElement('a');
+        $(entry).attr('href', '#');
+        $(entry).addClass("entry list-group-item");
+        $(entry).attr('id', 'entry_' + $(this).attr('id'));
+
+        entryTitle = document.createElement('h4');
+        $(entryTitle).addClass('list-group-item-heading');
+        $(entryTitle).html($(this).children('h2')[0].innerHTML);
+
+        entryIntro = document.createElement('p');
+        $(entryIntro).addClass('list-group-item-text');
+        $(entryIntro).html('<br/>' + $(this).children('.intro')[0].innerHTML +
+          '<br/><br/><small>Read more ...</small>');
+
+        $(entry).append(entryTitle);
+        $(entry).append(entryIntro);
+        $(index).append(entry);
+      });
+      $("#mainPane").append(index);
+
+      // Events
+      // click function does not work cause elements were created after
+      // loading DOM. So, use on function
+      $(document).on("click", ".entry", function(event){
+        event.preventDefault();
+        loadPost(this);
+      });
+
+      // Add selected post to main Pane
+      function loadPost(entry){
+        var index = $(entry).attr('id').match(/\d+/g)[0];
+        $("#mainPane").empty();
+        $("#mainPane").append($('#' + index).clone());
+      }
     </script>
   </body>
 </html>
