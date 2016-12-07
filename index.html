@@ -11,7 +11,6 @@
 
     <style type="text/css">
       body {
-        background-image: url("https://images.unsplash.com/photo-1435777940218-be0b632d06db?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;s=18cb0153c5365100ee6b46d1180c5f1d");
         background-repeat: repeat;
         background-size: cover;
         font-family: "Comic Sans MS", cursive, sans-serif;
@@ -19,6 +18,13 @@
       }
       h2 {
         text-align: center !important;
+      }
+      img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+      #readList h4 {
+        color: #5882FA !important;
       }
       .post {
         background-color: white;
@@ -55,11 +61,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="">Blog</a>
+          <a class="navbar-brand" href="index.html"><span class="glyphicon glyphicon-blackboard"></span> Blog</a>
         </div>
         <div class="collapse navbar-collapse" id="index-collapse">
           <ul class="nav navbar-nav">
-            <li><a id="homeBttn" href="index.html">Home</a></li>
+            <li><a id="homeBttn" href=""><span class="glyphicon glyphicon-home"></span> Home</a></li>
+            <li><a id="readListBttn" href=""><span class="glyphicon glyphicon-book"></span> Reading List</a></li>
           </ul>
           <div class="nav navbar-nav navbar-right">
             <a class="twitter-follow-button" href="https://twitter.com/lelugom" data-size="large" data-show-count="false">Follow @lelugom</a>
@@ -70,6 +77,22 @@
 
     <!-- Main panel -->
     <div class="container" id="mainPane"></div>
+
+    <!-- Reading list -->
+    <div class="hidden index" id="readList">
+      <a class="list-group-item">
+        <h4 class="list-group-item-heading">A Random Walk down Wall Street</h4>
+        <p class="list-group-item-text">A must read for anyone interested in knowing the different financial assets and investment concepts. After some chapters of financial markets history, including booms and boosts in the capital markets, the book explains financial concepts in a very easy to read format. You don't need any financial background to understand the concepts explained by Burton Malkiel. In the last chapters, you will find advice to develop your own investment plan and improve your personal finances.</p>
+      </a>
+      <a class="list-group-item">
+        <h4 class="list-group-item-heading">The Millionaire next door</h4>
+        <p class="list-group-item-text">Dr. Thomas J. Stanley and Dr. William D. Danko highlight saving and living below your means as a fundamental part of your financial well-being. This book has very interesting advice to accumulate wealth based on their research and data of the affluent people in the US. Hopefully after reading this book, you will become a prodigious accumulator of wealth, as they refer to people who has accumulated considerable amounts of money throughout their life.</p>
+      </a>
+      <a class="list-group-item">
+        <h4 class="list-group-item-heading">I will teach You to be Rich</h4>
+        <p class="list-group-item-text">A thorough guide about setting your financial life in order. It has easy to follow and practical steps for tackling debt, budgeting, saving, and investing. It's ideal if you haven't started or you are just starting your financial journey. Read this first before even considering the idea of investing.</p>
+      </a>
+    </div>
 
     <!-- Posts -->
     <div class = "hidden">
@@ -131,7 +154,7 @@
         </pre>
 
         <p>The signature method <var>HMAC-SHA1</var> will be used for computing the Oauth signature, this method is provided by the function <code>hmac_sha1_base64</code> in the module Digest::SHA. First, create a string separated by &amp; characters containing all the data in the Oauth parameters hash, using the <code>key=value</code> format. Parameter keys should be sorted in alphabetical order. Then, create the base signature string by concatenating the HTTP method in uppercase with the percent encoded URL and the percent encoded string for oauth parameters, joining the strings with the &amp; character.</p>
-        
+
         <p> Create the signing key by concatenating the <var>Consumer Secret</var> with the <var>Access token secret</var>, joining the strings with the &amp; character. Remember to percent encode each string before concatenation. Now, compute the oauth signature with the base signature and the signing key. It's important to know that CPAN digest modules don't pad the computed base64 signature by convention. Therefore, manually pad the computed signature with the code from the <a href="http://search.cpan.org/~mshelor/Digest-SHA-5.96/lib/Digest/SHA.pm#PADDING_OF_BASE64_DIGESTS">CPAN documentation</a> to avoid authentication errors when accessing the API</p>
         <pre>
     foreach $parameter (sort keys %oauth_parameters){
@@ -187,11 +210,11 @@
       </div>
 
       <div class="post" id="20161205">
-        <h2>Convert HP LJ1000 into a network printer with OpenWrt</h2>
+        <h2>Convert HP LaserJet 1000 into a network printer with OpenWrt</h2>
         <p>&nbsp;</p>
         <p class="intro">The HP LaserJet 1000 is a black and white printer which comes with a USB cable to connect directly to a port in your computer. Nevertheless, if you have a router with OpenWrt installed and a spare USB port on it, you can connect your USB printer to the router and share it in your Local Area Network to allow access from any Windows or Linux computer.</p>
 
-        <p>To make this happen, you need both a firmware file for the printer and a printer server. The drivers for the printer send the firmware file every time the printer powers on, so the router should do the same. To get the printer firmware file, we will use <a href="http://foo2zjs.rkkda.com/">foo2zjs</a>, an open source printer driver which supports HP LJ1000 printer. So, let's download the driver and unpack it </p>
+        <p>To make this happen, you need both a firmware file for the printer and a printer server. The drivers for the printer send the firmware file every time the printer powers on, so the router should do the same. To get the printer firmware file, we will use <a href="http://foo2zjs.rkkda.com/">foo2zjs</a>, an open source printer driver which supports HP LJ 1000 printer. So, let's download the driver and unpack it </p>
 
         <pre>
   $ wget -O foo2zjs.tar.gz http://foo2zjs.rkkda.com/foo2zjs.tar.gz
@@ -204,12 +227,12 @@
   $ ./getweb 1000
   $ sudo make install</pre>
 
-        <p>Now, under the foo2zjs folder. you will find the file <var>sihp1000.dl</var>, which is the firmware file that should be sent to the printer every time it powers on. Store this file in your router file system under the folder <code>/etc/config</code> to preserve it whenever you update the router with the <code>sysupgrade</code> command. We will use the <a href="http://man.cx/p910nd">p910nd</a> printer server, a small non-spooling printer daemon intended for disk-less linux hosts, which copies any data received on the port it is listening on to the corresponding printer port. Let's install the printer server and the USB printing module <code>kmod-usb-printer</code></p>
+        <p>Now, under the foo2zjs folder. you will find the file <strong>sihp1000.dl</strong>, which is the firmware file that the router should send through the USB port every time the printer powers on. should be sent to the printer every time it powers on. Store this file in your router file system under the folder <var>/etc/config</var> to preserve it whenever you update the router with the <code>sysupgrade</code> command. We will use the <a href="http://man.cx/p910nd">p910nd</a> printer server, a small non-spooling printer daemon intended for disk-less linux hosts, which copies any data received on the port it is listening on to the corresponding printer port. Let's install the printer server and the USB printing module <var>kmod-usb-printer</var></p>
         <pre>
   $ opkg update
   $ opkg install kmod-usb-printer p910nd</pre>
 
-        <p>Modify firewall configuration on <code>/etc/config/firewall</code> to accept packets on on TCP port 9100</p>
+        <p>Modify firewall configuration on <var>/etc/config/firewall</var> to accept packets on on TCP port <var>9100</var></p>
         <pre>
   # Allow attached network printer hplj1000
   config 'rule'
@@ -218,7 +241,7 @@
       option 'dest_port' '9100'
       option 'target' 'ACCEPT'</pre>
 
-        <p>Check the file <code>/etc/config/p910nd</code> has the following information, assuming your router IP is <var>192.168.1.1</var></p>
+        <p>Check the file <var>/etc/config/p910nd</var> has the following information, assuming your router IP is <var>192.168.1.1</var></p>
         <pre>
   config p910nd
     	option device        /dev/usb/lp0
@@ -227,7 +250,7 @@
     	option enabled       1
     	option bind          192.168.1.1</pre>
 
-        <p>We need a script to send the firmware file to the printer any time it powers on. So, let's create the script <code>/etc/hotplug.d/usb/hplj1000</code>. Remember that we store the firmware file <var>sihp1000.dl</var> under the folder <code>/etc/config</code> </p>
+        <p>We need a script to send the firmware file to the printer any time it powers on. So, let's create the script <code>/etc/hotplug.d/usb/hplj1000</code>. Remember that we store the firmware file <strong>sihp1000.dl</strong> under the folder <var>/etc/config</var> </p>
         <pre>
   #!/bin/sh
 
@@ -248,7 +271,8 @@
   /etc/init.d/p910nd start
   /etc/init.d/p910nd enable</pre>
 
-        <p>At this point, the printer daemon is up and running. The next step is to install the printer on the computer. Depending on the OS on your computer, follow the instructions <a href="https://wiki.openwrt.org/doc/howto/p910nd.server#configuration_part_2_the_clients">here</a>, and use your router IP address and the port <var>9100</var>.</p>
+        <p>At this point, the printer daemon is up and running. The next step is to install the printer on the computer. Depending on the OS on your computer, follow the instructions <a href="https://wiki.openwrt.org/doc/howto/p910nd.server#configuration_part_2_the_clients">here</a>, and use your router IP address and the port <var>9100</var>. For instance, if you have Ubuntu installed in your computer, go to printers and click the + button to add a printer and type <var>192.168.1.1:9100</var> in the network address input field, assuming that's your router IP. A JetDirect printer will appear, select it and then choose the HP foo2zjs driver previously installed, see the two images bellow</p>
+        <img class="col-xs-12" src="hplj1000_0.png"/><p>&nbsp;</p><img class="col-xs-12" src="hplj1000_1.png"/><p>&nbsp;</p>
 
         <p>Finally, if you need to spool jobs, there is an easy workaround. After installing the network printer on your computer, go to <a href="https://www.google.com/cloudprint">Google cloud print</a> and add the printer using the <var>Add a Classic Printer</var> option. Then, share this printer to the users you need. This way, any person with the shared printer can send print jobs, and they will be sent to the printer whenever chrome runs on your computer. Remember to synchronize chrome to your Google account for the spooling to work.</p>
       </div>
@@ -259,6 +283,10 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script type="text/javascript">
+      var backgroundImage =
+       'url("https://images.unsplash.com/photo-1435777940218-be0b632d06db?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;s=18cb0153c5365100ee6b46d1180c5f1d")';
+      var gridClass = "col-xs-12 col-md-offset-2 col-md-8";
+
       // Load twitter JS to avoid script tags in the HTML elements
       window.twttr = (function(d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0],
@@ -276,55 +304,84 @@
         return t;
       }(document, "script", "twitter-wjs"));
 
-      // Fix some document elements
-      var gridClass = "col-xs-12 col-md-offset-2 col-md-8";
+      // Set some document elements
       $(".post").addClass(gridClass);
       $(".post").each(function() {
         $(this).find('a').each(function(){
           $(this).attr("target", "_blank");
         });
       });
-
-      // Create posts index in main panel
-      var index = document.createElement('div');
-      $(index).addClass(gridClass + ' index');
-      $(".post").each(function() {
-        // Assemble entry
-        var entry, entryTitle, entryIntro;
-
-        entry = document.createElement('a');
-        $(entry).attr('href', '#');
-        $(entry).addClass("entry list-group-item");
-        $(entry).attr('id', 'entry_' + $(this).attr('id'));
-
-        entryTitle = document.createElement('h4');
-        $(entryTitle).addClass('list-group-item-heading');
-        $(entryTitle).html($(this).children('h2')[0].innerHTML);
-
-        entryIntro = document.createElement('p');
-        $(entryIntro).addClass('list-group-item-text');
-        $(entryIntro).html('<br/>' + $(this).children('.intro')[0].innerHTML +
-          '<br/><br/><small>Read more ...</small>');
-
-        $(entry).append(entryTitle);
-        $(entry).append(entryIntro);
-        $(index).append(entry);
-      });
-      $("#mainPane").append(index);
+      $("#readList").addClass(gridClass);
+      createIndex();
 
       // Events
-      // click function does not work cause elements were created after
-      // loading DOM. So, use on function
       $(document).on("click", ".entry", function(event){
+        // click function does not work cause <a> elements were
+        // created after loading DOM. So, use on function
         event.preventDefault();
         loadPost(this);
       });
+      $("#homeBttn").click(function(event){
+        event.preventDefault();
+        createIndex();
+        $(".navbar-collapse").collapse('hide');
+      });
+      $("#readListBttn").click(function(event){
+        event.preventDefault();
+        setMainPane($("#readList").clone().removeClass("hidden"));
+        $(".navbar-collapse").collapse('hide');
+      });
 
-      // Add selected post to main Pane
+      // Create posts index in main panel
+      function createIndex(){
+        var index = document.createElement('div');
+        $(index).addClass(gridClass + ' index');
+        $("#mainPane").empty();
+
+        $(".post").each(function() {
+          // Assemble entry
+          var entry, entryTitle, entryIntro;
+
+          entry = document.createElement('a');
+          $(entry).attr('href', '#');
+          $(entry).addClass("entry list-group-item");
+          $(entry).attr('id', 'entry_' + $(this).attr('id'));
+
+          entryTitle = document.createElement('h4');
+          $(entryTitle).addClass('list-group-item-heading');
+          $(entryTitle).html($(this).children('h2')[0].innerHTML);
+
+          entryIntro = document.createElement('p');
+          $(entryIntro).addClass('list-group-item-text');
+          $(entryIntro).html('<br/>' + $(this).children('.intro')[0].innerHTML +
+            '<br/><br/><small>Read more ...</small>');
+
+          $(entry).append(entryTitle);
+          $(entry).append(entryIntro);
+          $(index).append(entry);
+        });
+        setMainPane(index);
+      }
+
+      // Add selected post to main panel
       function loadPost(entry){
         var index = $(entry).attr('id').match(/\d+/g)[0];
+        setMainPane($('#' + index).clone());
+        $("body").css("background-image", "none");
+        $("body").css("background-color", '#a2bccc'); // #5882FA
+
+        /* To include a tweet for the post, use this code
+        twttr.ready(function (twttr){
+          twttr.widgets.createTweet("806330375056347136",
+            document.getElementById(index), { align: 'center' });
+        });*/
+      }
+
+      // Clear main panel content and append argument
+      function setMainPane(element){
         $("#mainPane").empty();
-        $("#mainPane").append($('#' + index).clone());
+        $("#mainPane").append(element);
+        $("body").css("background-image", backgroundImage);
       }
     </script>
   </body>
