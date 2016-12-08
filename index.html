@@ -61,12 +61,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="index.html"><span class="glyphicon glyphicon-home"></span> Home</a>
+          <a class="navbar-brand" href=""><span class="glyphicon glyphicon-home"></span> Home</a>
         </div>
         <div class="collapse navbar-collapse" id="index-collapse">
           <ul class="nav navbar-nav">
-            <li><a id="homeBttn" href=""><span class="glyphicon glyphicon-blackboard"></span> Blog</a></li>
-            <li><a id="readListBttn" href=""><span class="glyphicon glyphicon-book"></span> Reading List</a></li>
+            <li><a id="blogBttn" href=""><span class="glyphicon glyphicon-blackboard"></span> Blog</a></li>
+            <li><a id="readListBttn" href="#readList"><span class="glyphicon glyphicon-book"></span> Reading List</a></li>
           </ul>
           <div class="nav navbar-nav navbar-right">
             <a class="twitter-follow-button" href="https://twitter.com/lelugom" data-size="large" data-show-count="false">Follow @lelugom</a>
@@ -283,6 +283,7 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script type="text/javascript">
+      'use strict';
       var backgroundImage =
        'url("https://images.unsplash.com/photo-1435777940218-be0b632d06db?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;s=18cb0153c5365100ee6b46d1180c5f1d")';
       var gridClass = "col-xs-12 col-md-offset-2 col-md-8";
@@ -321,7 +322,7 @@
         event.preventDefault();
         loadPost(this);
       });
-      $("#homeBttn").click(function(event){
+      $("#blogBttn").click(function(event){
         event.preventDefault();
         createIndex();
         $(".navbar-collapse").collapse('hide');
@@ -331,6 +332,16 @@
         setMainPane($("#readList").clone().removeClass("hidden"));
         $(".navbar-collapse").collapse('hide');
       });
+      // References in URL
+      var reference = /\#\w+$/.exec(window.location.href);
+      if(reference.length){
+        if(reference[0] === '#readList'){
+          setMainPane($(reference[0]).clone().removeClass("hidden"));
+        } else if($(reference[0]).length){
+          // link should be a blog post reference
+          loadPost(reference[0]);
+        }
+      }
 
       // Create posts index in main panel
       function createIndex(){
@@ -343,8 +354,8 @@
           var entry, entryTitle, entryIntro;
 
           entry = document.createElement('a');
-          $(entry).attr('href', '#');
           $(entry).addClass("entry list-group-item");
+          $(entry).attr('href', '#' + $(this).attr('id'));
           $(entry).attr('id', 'entry_' + $(this).attr('id'));
 
           entryTitle = document.createElement('h4');
@@ -382,6 +393,10 @@
         $("#mainPane").empty();
         $("#mainPane").append(element);
         $("body").css("background-image", backgroundImage);
+        // Fix main panel height according to viewport height
+        if($("#mainPane").height() < $(window).height() - 60){
+          $("#mainPane").height($(window).height() - 60);
+        }
       }
     </script>
   </body>
