@@ -235,7 +235,7 @@
   $ ./getweb 1000
   $ sudo make install</pre>
 
-        <p>Now, under the foo2zjs folder. you will find the file <strong>sihp1000.dl</strong>, which is the firmware file that the router should send through the USB port every time the printer powers on. should be sent to the printer every time it powers on. Store this file in your router file system under the folder <var>/etc/config</var> to preserve it whenever you update the router with the <code>sysupgrade</code> command. We will use the <a href="http://man.cx/p910nd">p910nd</a> printer server, a small non-spooling printer daemon intended for disk-less linux hosts, which copies any data received on the port it is listening on to the corresponding printer port. Let's install the printer server and the USB printing module <var>kmod-usb-printer</var></p>
+        <p>Now, under the foo2zjs folder. you will find the file <strong>sihp1000.dl</strong>, which is the firmware file that the router should send through the USB port every time the printer powers on. Store this file in your router file system under the folder <var>/etc/config</var> to preserve it whenever you update the router with the <code>sysupgrade</code> command. We will use the <a href="http://man.cx/p910nd">p910nd</a> printer server, a small non-spooling printer daemon intended for disk-less linux hosts, which copies any data received on the port it is listening on to the corresponding printer port. Let's install the printer server and the USB printing module <var>kmod-usb-printer</var></p>
         <pre>
   $ opkg update
   $ opkg install kmod-usb-printer p910nd</pre>
