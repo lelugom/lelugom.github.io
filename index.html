@@ -37,7 +37,7 @@
         border-radius: 3px;
         padding: 10px;
         overflow-y: auto;
-        /*height: 500px;*/
+        height: 500px;
       }
       #mainPane {
         margin-top: 60px;
@@ -80,17 +80,25 @@
 
     <!-- Reading list -->
     <div class="hidden index" id="readList">
-      <a class="list-group-item">
-        <h4 class="list-group-item-heading">A Random Walk down Wall Street</h4>
-        <p class="list-group-item-text">A must read for anyone interested in knowing the different financial assets and investment concepts. After some chapters of financial markets history, including booms and boosts in the capital markets, the book explains financial concepts in a very easy to read format. You don't need any financial background to understand the concepts explained by Burton Malkiel. In the last chapters, you will find advice to develop your own investment plan and improve your personal finances.</p>
+      <a href="https://play.google.com/store/books/details?id=oHLsAgAAQBAJ" class="list-group-item">
+        <h4 class="list-group-item-heading">Think And Grow Rich</h4>
+        <p class="list-group-item-text">This classic work of personal development literature was published after the stock market crash of 1929. Although it was written near a century ago, It has sound advice which is still valid to face today's challenges in different aspects of your life. A practical strategy, along with real life examples, is described in the book to give you the tools to achieve what you desire in your life. Should you find yourself drifting along your journey, the principles described in the book will explain the importance of setting goals and striving to achieve them.</p>
       </a>
-      <a class="list-group-item">
-        <h4 class="list-group-item-heading">The Millionaire next door</h4>
+      <a href="https://play.google.com/store/books/details?id=N0OnBQAAQBAJ" class="list-group-item">
+        <h4 class="list-group-item-heading">A Random Walk Down Wall Street</h4>
+        <p class="list-group-item-text">A must read for anyone interested in knowing the different financial assets and investment concepts. After some chapters of financial markets history, including booms and boosts in the capital markets, the book explains financial concepts in a very easy to read format. You don't need any financial background to understand the concepts explained by Burton Malkiel. In the last chapters, you will find advice to develop your own investment plan, set your asset allocation and improve your personal finances.</p>
+      </a>
+      <a href="https://play.google.com/store/books/details?id=qRMqB2BSJr4C" class="list-group-item">
+        <h4 class="list-group-item-heading">The Millionaire Next Door</h4>
         <p class="list-group-item-text">Dr. Thomas J. Stanley and Dr. William D. Danko highlight saving and living below your means as a fundamental part of your financial well-being. This book has very interesting advice to accumulate wealth based on their research and data of the affluent people in the US. Hopefully after reading this book, you will become a prodigious accumulator of wealth, as they refer to people who has accumulated considerable amounts of money throughout their life.</p>
       </a>
-      <a class="list-group-item">
-        <h4 class="list-group-item-heading">I will teach You to be Rich</h4>
-        <p class="list-group-item-text">A thorough guide about setting your financial life in order. It has easy to follow and practical steps for tackling debt, budgeting, saving, and investing. It's ideal if you haven't started or you are just starting your financial journey. Read this first before even considering the idea of investing.</p>
+      <a href="https://play.google.com/store/books/details?id=YtE6JJ78XLcC" class="list-group-item">
+        <h4 class="list-group-item-heading">I Will Teach You To Be Rich</h4>
+        <p class="list-group-item-text">A thorough guide about setting your financial life in order. It has easy to follow and practical steps for tackling debt, budgeting, saving, planning and investing. It's ideal if you have not started or you are just starting your financial journey. Read this first and apply the steps to your finances before considering the idea of investing.</p>
+      </a>
+      <a href="https://play.google.com/store/books/details?id=a8LBjVImeO4C" class="list-group-item">
+        <h4 class="list-group-item-heading">The Plague</h4>
+        <p class="list-group-item-text">A novel written by Nobel prize winner Albert Camus, it's a vivid story developed in the Algerian city of Oran. The book depicts the human nature in difficult situations of life and the different reactions that people have when they face a harsh environment. Throughout the prose, you will connect to the different emotions of the situation, grow your reflection capabilities and identify the strengths of the characters. </p>
       </a>
     </div>
 
@@ -275,6 +283,10 @@
         <img class="col-xs-12" src="hplj1000_0.png"/><p>&nbsp;</p><img class="col-xs-12" src="hplj1000_1.png"/><p>&nbsp;</p>
 
         <p>Finally, if you need to spool jobs, there is an easy workaround. After installing the network printer on your computer, go to <a href="https://www.google.com/cloudprint">Google cloud print</a> and add the printer using the <var>Add a Classic Printer</var> option. Then, share this printer to the users you need. This way, any person with the shared printer can send print jobs, and they will be sent to the printer whenever chrome runs on your computer. Remember to synchronize chrome to your Google account for the spooling to work.</p>
+
+        <!--blockquote class="twitter-tweet" data-lang="en" align="center" theme="dark">
+          <a href="https://twitter.com/lelugom/status/805813783713169409"></a>
+        </blockquote-->
       </div>
     </div>
 
@@ -313,6 +325,9 @@
         });
       });
       $("#readList").addClass(gridClass);
+      $("#readList").find('a').each(function(){
+        $(this).attr("target", "_blank");
+      });
       createIndex();
 
       // Events
@@ -334,7 +349,7 @@
       });
       // References in URL
       var reference = /\#\w+$/.exec(window.location.href);
-      if(reference.length){
+      if(reference && reference.length){
         if(reference[0] === '#readList'){
           setMainPane($(reference[0]).clone().removeClass("hidden"));
         } else if($(reference[0]).length){
@@ -379,13 +394,7 @@
         var index = $(entry).attr('id').match(/\d+/g)[0];
         setMainPane($('#' + index).clone());
         $("body").css("background-image", "none");
-        $("body").css("background-color", '#a2bccc'); // #5882FA
-
-        /* To include a tweet for the post, use this code
-        twttr.ready(function (twttr){
-          twttr.widgets.createTweet("806330375056347136",
-            document.getElementById(index), { align: 'center' });
-        });*/
+        $("body").css("background-color", '#a2bccc');
       }
 
       // Clear main panel content and append argument
@@ -394,8 +403,10 @@
         $("#mainPane").append(element);
         $("body").css("background-image", backgroundImage);
         // Fix main panel height according to viewport height
-        if($("#mainPane").height() < $(window).height() - 60){
-          $("#mainPane").height($(window).height() - 60);
+        var paneHeight = $(window).height() - parseInt($("#mainPane").css("margin-top"));
+        if($("#mainPane").height() < paneHeight){
+          $("#mainPane").height(paneHeight);
+          $(".index").height(paneHeight - parseInt($(".index").css("margin-bottom")) - 2 * parseInt($(".index").css("padding")));
         }
       }
     </script>
