@@ -12,7 +12,7 @@
     <style type="text/css">
       body {
         background-repeat: repeat;
-        background-size: cover;
+        background-size: auto;
         font-family: "Comic Sans MS", cursive, sans-serif;
         text-align: justify;
       }
@@ -22,9 +22,6 @@
       img {
         max-width: 100%;
         max-height: 100%;
-      }
-      .index h4 {
-        color: #5882FA !important;
       }
       .post {
         background-color: white;
@@ -38,6 +35,9 @@
         padding: 10px;
         overflow-y: auto;
         height: 500px;
+      }
+      .index h4 {
+        color: #5882FA !important;
       }
       #mainPane {
         margin-top: 60px;
@@ -65,7 +65,7 @@
         </div>
         <div class="collapse navbar-collapse" id="index-collapse">
           <ul class="nav navbar-nav">
-            <li><a id="blogBttn" href=""><span class="glyphicon glyphicon-blackboard"></span> Blog</a></li>
+            <li><a id="blogBttn" href="#blog"><span class="glyphicon glyphicon-blackboard"></span> Blog</a></li>
             <li><a id="readListBttn" href="#readList"><span class="glyphicon glyphicon-book"></span> Reading List</a></li>
           </ul>
           <div class="nav navbar-nav navbar-right">
@@ -104,6 +104,19 @@
 
     <!-- Posts -->
     <div class = "hidden">
+      <div class="post" id="20161214">
+        <h2>Distributed ledgers in the digital market</h2>
+        <p>&nbsp;</p>
+        <p class="intro">The blockchain technology is a distributed ledger for electronic transactions, which is used by bitcoin, the most popular virtual currency in the market. The main characteristic of these ledgers is the fact that they are handled by a distributed network of participants rather than a centralized entity.</p>
+        <p>The participants are called nodes and a central validation system is not needed at all because of the nodes distributed topology.  Another important consideration is the extensive use of cryptographic techniques to store the assets and validate the ledger transactions with a digitally secure approach.</p>
+        <p>Even though the most popular applications for the blockchain technology are the virtual currencies, it is increasingly finding new applications for the financial and banking industry. Those applications include the electronic payment infrastructure and the digital assets for the capital markets.</p>
+        <p>It is also possible to find distributed ledgers for the digital identities used by software applications, web sites and digital signatures. At the same time, distributed ledgers may be used to create verifiable registries for any data, file or business process, making these ledgers a mainstream technology in the digital market. As <a href="https://en.wikipedia.org/wiki/Blythe_Masters">Blythe Masters</a>, CEO of fintech firm Digital Asset, said <a href="http://www.coindesk.com/blythe-masters-tipping-point-blockchain-adoption-2017/">recently</a>:</p>
+
+          <blockquote class="bg-info small"><p> We're at a tipping point where this technology is turning mainstream and this technology needs to be understood by a more mainstream audience.</p><footer>From www.coindesk.com website</footer></blockquote>
+
+          <p><var>The Linux Foundation</var> launched the collaborative project  <a href="https://www.hyperledger.org/">Hyperledger</a>, an effort to advance the blockchain technology by developing an open standard for the distributed ledgers. This initiative can potentially transform the way the business transactions are performed nowadays, and redefine the rules for different industries, such as healthcare, manufacturing and supply chain.</p>
+      </div>
+
       <div class="post" id="20161107">
         <h2>Access Twitter REST API from Perl</h2>
         <p>&nbsp;</p>
@@ -335,17 +348,19 @@
         // click function does not work cause <a> elements were
         // created after loading DOM. So, use on function
         event.preventDefault();
+        // Update URL
+        window.location.hash = $(this).attr('href');
         loadPost(this);
       });
       $("#blogBttn").click(function(event){
         event.preventDefault();
-        createIndex();
         $(".navbar-collapse").collapse('hide');
+        createIndex();
       });
       $("#readListBttn").click(function(event){
         event.preventDefault();
-        setMainPane($("#readList").clone().removeClass("hidden"));
         $(".navbar-collapse").collapse('hide');
+        setMainPane($("#readList").clone().removeClass("hidden"));
       });
       // References in URL
       var reference = /\#\w+$/.exec(window.location.href);
@@ -356,6 +371,9 @@
           // link should be a blog post reference
           loadPost(reference[0]);
         }
+      } else {
+        // Main page
+        createTimeline();
       }
 
       // Create posts index in main panel
@@ -389,6 +407,27 @@
         setMainPane(index);
       }
 
+      // Create twitter timeline in main Pane
+      function createTimeline(){
+        var timeline = document.createElement('div');
+        $(timeline).addClass("col-md-4");
+        $(timeline).css("padding", "0 4px 0 4px");
+
+        $("#mainPane").find(".index").each(function(){
+          $(this).removeClass("col-md-offset-2");
+          $(timeline).html(
+            '<a class="twitter-timeline" href="https://twitter.com/lelugom" data-height="'
+            + ($(this).height() + 2 * parseInt($(this).css("padding"))) +
+            '"  data-show-replies="false" data-theme="dark">Tweets by @lelugom</a>');
+        });
+
+        twttr.ready(function (twttr) {
+          twttr.widgets.load($(timeline));
+          $("#mainPane").append(timeline);
+          $("body").css("background-size", "auto");
+        });
+      }
+
       // Add selected post to main panel
       function loadPost(entry){
         var index = $(entry).attr('id').match(/\d+/g)[0];
@@ -402,12 +441,12 @@
         $("#mainPane").empty();
         $("#mainPane").append(element);
         $("body").css("background-image", backgroundImage);
+        $("body").css("background-size", "cover");
         // Fix main panel height according to viewport height
-        var paneHeight = $(window).height() - parseInt($("#mainPane").css("margin-top"));
-        if($("#mainPane").height() < paneHeight){
-          $("#mainPane").height(paneHeight);
-          $(".index").height(paneHeight - parseInt($(".index").css("margin-bottom")) - 2 * parseInt($(".index").css("padding")));
-        }
+        var paneHeight = $(window).height()
+          - parseInt($("#mainPane").css("margin-top"));
+        $(".index").height(paneHeight - parseInt($(".index").css("margin-bottom"))
+          - 2 * parseInt($(".index").css("padding")));
       }
     </script>
   </body>
