@@ -357,16 +357,18 @@
         // created after loading DOM. So, use on function
         event.preventDefault();
         // Update URL
-        window.location.hash = $(this).attr('href');
+        window.location.replace($(this).attr('href'));
         loadPost(this);
       });
       $("#blogBttn").click(function(event){
         event.preventDefault();
+        window.location.replace($(this).attr('href'));
         $(".navbar-collapse").collapse('hide');
         createIndex();
       });
       $("#readListBttn").click(function(event){
         event.preventDefault();
+        window.location.replace($(this).attr('href'));
         $(".navbar-collapse").collapse('hide');
         setMainPane($("#readList").clone().removeClass("hidden"));
       });
@@ -381,7 +383,7 @@
         }
       } else {
         // Main page
-        //createTimeline();
+        createTimeline();
       }
 
       // Create posts index in main panel
@@ -418,28 +420,30 @@
       // Create twitter timeline in main Pane
       function createTimeline(){
         var timeline = document.createElement('div');
-        $(timeline).addClass("col-md-4");
+        $(timeline).addClass("col-xs-12 col-md-4"); // add both xs and md to avoid overlapping
         $(timeline).css("padding", "0 4px 0 4px");
 
         $("#mainPane").find(".index").each(function(){
           $(this).removeClass("col-md-offset-2");
           $(timeline).html(
             '<a class="twitter-timeline" href="https://twitter.com/lelugom" data-height="'
-            + ($(this).height() + 2 * parseInt($(this).css("padding"))) +
-            '"  data-show-replies="false" data-theme="dark">Tweets by @lelugom</a>');
+            + ($(this).height() + 2 * parseInt($(this).css("padding-bottom"))) +
+            '"  data-show-replies="false" data-theme="dark">Tweets by @lelugom</a>'); // firefox does not work when using css(padding) cause shorthand CSS properties are not guaranteed in jquery
         });
 
         twttr.ready(function (twttr) {
-          twttr.widgets.load($(timeline));
           $("#mainPane").append(timeline);
           $("body").css("background-size", "auto");
+          twttr.widgets.load($(timeline));
         });
       }
 
       // Add selected post to main panel
       function loadPost(entry){
         var index = $(entry).attr('id').match(/\d+/g)[0];
-        setMainPane($('#' + index).clone());
+        if(index){
+          setMainPane($('#' + index).clone());
+        }
       }
 
       // Clear main panel content and append argument
@@ -451,7 +455,7 @@
         var paneHeight = $(window).height()
           - parseInt($("#mainPane").css("margin-top"));
         $(".index").height(paneHeight - parseInt($(".index").css("margin-bottom"))
-          - 2 * parseInt($(".index").css("padding")));
+          - 2 * parseInt($(".index").css("padding-bottom")));
       }
     </script>
   </body>
