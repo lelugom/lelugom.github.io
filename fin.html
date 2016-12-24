@@ -18,9 +18,14 @@
       .col-md-4 {
         margin: 5px 0 5px 0;
       }
+      #app {
+        margin: 0;
+        padding: 0;
+      }
     </style>
   </head>
   <body>
+    <div id="app"></div>
     <script type='text/javascript'>
       // Load twitter JS to avoid script tags in the HTML elements
       window.twttr = (function(d, s, id) {
@@ -40,8 +45,6 @@
         return t;
       }(document, "script", "twitter-wjs"));
     </script>
-
-    <div id="app"></div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
