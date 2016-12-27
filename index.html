@@ -38,13 +38,19 @@
         border-radius: 3px;
         padding: 10px;
         overflow-y: auto;
-        height: 500px;
       }
       .index h4 {
         color: #5882FA !important;
       }
+      .index h5 {
+        color: #5882FA !important;
+      }
       #mainPane {
         margin-top: 60px;
+      }
+      .console {
+        color: white;
+        background-color: #300A24;
       }
       .hidden {
         visibility: hidden;
@@ -86,7 +92,7 @@
     <div class="hidden index" id="readList">
       <a href="https://play.google.com/store/books/details?id=oHLsAgAAQBAJ" class="list-group-item">
         <h4 class="list-group-item-heading">Think And Grow Rich</h4>
-        <p class="list-group-item-text">This classic work of personal development literature was published after the stock market crash of 1929. Although it was written near a century ago, It has sound advice which is still valid to face today's challenges in different aspects of your life. A practical strategy, along with real life examples, is described in the book to give you the tools to achieve what you desire in your life. Should you find yourself drifting along your journey, the principles described in the book will explain the importance of setting goals and striving to achieve them.</p>
+        <p class="list-group-item-text">This classic work of personal development literature was published after the stock market crash of 1929. Although it was written near a century ago, it has sound advice which is still valid to face today's challenges in different aspects of your life. A practical strategy, along with real life examples, is described in the book to give you the tools to achieve what you desire in your life. Should you find yourself drifting along your journey, the principles described in the book will explain the importance of setting goals and striving to achieve them.</p>
       </a>
       <a href="https://play.google.com/store/books/details?id=N0OnBQAAQBAJ" class="list-group-item">
         <h4 class="list-group-item-heading">A Random Walk Down Wall Street</h4>
@@ -107,7 +113,7 @@
     </div>
 
     <!-- Posts -->
-    <div class = "hidden">
+    <div class = "hidden" id="hiddenPane">
       <div class="post" id="20161214">
         <h2>Distributed ledgers in the digital market</h2>
         <p>&nbsp;</p>
@@ -244,19 +250,19 @@
 
         <p>To make this happen, you need both a firmware file for the printer and a printer server. The drivers for the printer send the firmware file every time the printer powers on, so the router should do the same. To get the printer firmware file, we will use <a href="http://foo2zjs.rkkda.com/">foo2zjs</a>, an open source printer driver which supports HP LJ 1000 printer. So, let's download the driver and unpack it </p>
 
-        <pre>
+        <pre class="console">
   $ wget -O foo2zjs.tar.gz http://foo2zjs.rkkda.com/foo2zjs.tar.gz
   $ tar zxf foo2zjs.tar.gz
   $ cd foo2zjs</pre>
 
         <p>Compile and install it </p>
-        <pre>
+        <pre class="console">
   $ make
   $ ./getweb 1000
   $ sudo make install</pre>
 
         <p>Now, under the foo2zjs folder. you will find the file <strong>sihp1000.dl</strong>, which is the firmware file that the router should send through the USB port every time the printer powers on. Store this file in your router file system under the folder <var>/etc/config</var> to preserve it whenever you update the router with the <code>sysupgrade</code> command. We will use the <a href="http://man.cx/p910nd">p910nd</a> printer server, a small non-spooling printer daemon intended for disk-less linux hosts, which copies any data received on the port it is listening on to the corresponding printer port. Let's install the printer server and the USB printing module <var>kmod-usb-printer</var></p>
-        <pre>
+        <pre class="console">
   $ opkg update
   $ opkg install kmod-usb-printer p910nd</pre>
 
@@ -295,9 +301,9 @@
   fi</pre>
 
         <p>Start and enable the printer daemon</p>
-        <pre>
-  /etc/init.d/p910nd start
-  /etc/init.d/p910nd enable</pre>
+        <pre class="console">
+  $ /etc/init.d/p910nd start
+  $ /etc/init.d/p910nd enable</pre>
 
         <p>At this point, the printer daemon is up and running. The next step is to install the printer on the computer. Depending on the OS on your computer, follow the instructions <a href="https://wiki.openwrt.org/doc/howto/p910nd.server#configuration_part_2_the_clients">here</a>, and use your router IP address and the port <var>9100</var>. For instance, if you have Ubuntu installed in your computer, go to printers and click the + button to add a printer and type <var>192.168.1.1:9100</var> in the network address input field, assuming that's your router IP. A JetDirect printer will appear, select it and then choose the HP foo2zjs driver previously installed, see the two images bellow</p>
         <img class="col-xs-12" src="hplj1000_0.png"/><p>&nbsp;</p><img class="col-xs-12" src="hplj1000_1.png"/><p>&nbsp;</p>
@@ -307,6 +313,64 @@
         <!--blockquote class="twitter-tweet" data-lang="en" align="center" theme="dark">
           <a href="https://twitter.com/lelugom/status/805813783713169409"></a>
         </blockquote-->
+      </div>
+
+      <div class="post" id="20161226">
+        <h2>Upgrade an OpenWrt router using development snapshots</h2>
+        <p>&nbsp;</p>
+        <p class="intro">OpenWrt is a great distribution aimed to install a small Linux version in your embedded system, particularly your router. It supports lots of routers nowadays and new models are constantly added to the code base. There are two versions available for your router, the stable <a href="https://downloads.openwrt.org/chaos_calmer/15.05.1/">release</a>, which was updated on March 2016 and received the name Chaos Calmer 15.05.1. The other available version is the development branch, known as Designated Driver. </p>
+
+        <p>Although you can build the development branch from the GitHub repository, there are pre-built snapshots available <a href="http://downloads.openwrt.org/snapshots/trunk/">here</a>. They does not have any web interface, therefore, all the installation process is performed from the command line interface. To showcase the process, let's update a TP-Link WDR3500  router using the build snapshot. Make sure you check the <a href="https://downloads.openwrt.org/snapshots/trunk/">snapshots page</a> to find a suitable image for your particular router! If you install the wrong image, <span class="label label-danger">you will brick your router <span class='glyphicon glyphicon-alert'></span></span>. Before starting, let's make a configuration backup in case some unexpected result happens during the update process</p>
+
+        <pre class="console">
+  $ sysupgrade --create-backup /tmp/backup_conf.tar.gz </pre>
+
+        <p>Now, copy your backup from <var>/tmp</var> to your computer using <code>scp</code> command. Usually the storage on a router is quite limited. Therefore, we will check if the RAM available is enough to store the snapshot image in the <var>/tmp</var> filesystem</p>
+
+          <pre class="console">
+  $ free
+               total       used       free     shared    buffers     cached
+  Mem:        125196      26496      98700         88       1944       5748
+  -/+ buffers/cache:      18804     106392
+  Swap:            0          0          0 </pre>
+          <p>The size of the snapshot image is usually around 3.2MB for this particular router, so we have more than enough space. Let's change working directory to <var>/tmp</var>, download the snapshot image and the checksum file to check image integrity </p>
+
+          <pre class="console">
+  $ cd /tmp
+  $ wget http://downloads.openwrt.org/snapshots/trunk/ar71xx/generic/md5sums
+  $ wget http://downloads.openwrt.org/snapshots/trunk/ar71xx/generic/openwrt-ar71xx-generic-tl-wdr3500-v1-squashfs-sysupgrade.bin</pre>
+          <p>Now check image integrity with de <code>md5sum</code> command. If you don't get any output after running the command, the image file is corrupt. Download the image again and check it before any further step in order to avoid bricking your router</p>
+
+          <pre class="console">
+  $ md5sum -c md5sums 2> /dev/null | grep OK
+  openwrt-ar71xx-generic-tl-wdr3500-v1-squashfs-sysupgrade.bin: OK</pre>
+
+          <p>By now, We have the snapshot in our temporary storage. We are almost ready to upgrade the router, but we should first store important system files to avoid configuring the router from scratch after upgrading. In order to preserve the configuration files after performing the upgrade, you can edit the file <var>/etc/sysupgrade.conf</var> to specify wich files and directories you want to keep. This way you will preserve users, passwords, SSIDs and other configurations. Here is an example file</p>
+
+          <pre>
+  ## This file contains files and directories that should
+  ## be preserved during an upgrade.
+
+  # /etc/example.conf
+  # /etc/openvpn/
+  /etc/sysupgrade.conf
+  /etc/sysctl.conf
+  /etc/rc.local
+  /etc/profile
+  /etc/passwd
+  /etc/firewall.user
+  /etc/config
+  /etc/hotplug.d/usb</pre>
+
+          <p>Now, upgrade your router by running the <code>sysupgrade</code> command tool. It will install the new image and reboot your router.</p>
+          <pre class="console">
+  $ sysupgrade -v /tmp/openwrt-ar71xx-generic-tl-wdr3500-v1-squashfs-sysupgrade.bin</pre>
+
+          <p>Finally, install the packages you regularly use in your router, such as the packages needed for a <a href="#20161205">printer server</a>, or monitoring tools such as iftop, bmon and htop
+
+          <pre class="console">
+  $ opkg update
+  $ opkg install p910nd kmod-usb-printer iftop htop bmon </pre>
       </div>
     </div>
 
@@ -319,6 +383,8 @@
       var backgroundImage =
        'url("https://images.unsplash.com/photo-1435777940218-be0b632d06db?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;s=18cb0153c5365100ee6b46d1180c5f1d")';
       var gridClass = "col-xs-12 col-md-offset-2 col-md-8";
+      var postClass = "col-xs-12 col-md-offset-2 col-md-8";
+      var listClass = "col-xs-12 col-md-offset-2 col-md-8";
 
       // Load twitter JS to avoid script tags in the HTML elements
       window.twttr = (function(d, s, id) {
@@ -339,7 +405,7 @@
 
       // Set some document elements
       $("body").css("background-image", backgroundImage);
-      $(".post").addClass(gridClass);
+      $(".post").addClass(postClass);
       $(".post").each(function() {
         $(this).find('a').each(function(){
           $(this).attr("target", "_blank");
@@ -386,10 +452,17 @@
         createTimeline();
       }
 
-      // Create posts index in main panel
+      // Create posts index in main panel and post list for blog posts
       function createIndex(){
         var index = document.createElement('div');
+        var list = document.createElement('div');
+
         $(index).addClass(gridClass + ' index');
+        $(index).attr('id', 'postsIndex');
+        $(list).addClass(listClass + ' index');
+        $(list).attr('id', 'postsList');
+        $(list).append($(document.createElement('p'))
+          .addClass('lead text-center').html('Recent posts'));
         $("#mainPane").empty();
 
         $(".post").each(function() {
@@ -401,7 +474,7 @@
           $(entry).attr('href', '#' + $(this).attr('id'));
           $(entry).attr('id', 'entry_' + $(this).attr('id'));
 
-          entryTitle = document.createElement('h4');
+          entryTitle = document.createElement('h5');
           $(entryTitle).addClass('list-group-item-heading');
           $(entryTitle).html($(this).children('h2')[0].innerHTML);
 
@@ -411,24 +484,31 @@
             '<br/><br/><small>Read more ...</small>');
 
           $(entry).append(entryTitle);
+          $(list).append(
+            $(entry).clone().attr('id', 'list_' + $(this).attr('id')));
+
           $(entry).append(entryIntro);
           $(index).append(entry);
         });
         setMainPane(index);
+        $("#hiddenPane").append($(list));
       }
 
       // Create twitter timeline in main Pane
       function createTimeline(){
         var timeline = document.createElement('div');
-        $(timeline).addClass("col-xs-12 col-md-4"); // add both xs and md to avoid overlapping
+        // add both xs and md to avoid overlapping
+        $(timeline).addClass("col-xs-12 col-md-4");
         $(timeline).css("padding", "0 4px 0 4px");
 
-        $("#mainPane").find(".index").each(function(){
+        $("#mainPane").find("#postsIndex").each(function(){
           $(this).removeClass("col-md-offset-2");
           $(timeline).html(
+            // Firefox does not work when using css(padding)
+            // cause shorthand CSS properties are not guaranteed in jquery
             '<a class="twitter-timeline" href="https://twitter.com/lelugom" data-height="'
             + ($(this).height() + 2 * parseInt($(this).css("padding-bottom"))) +
-            '"  data-show-replies="false" data-theme="dark">Tweets by @lelugom</a>'); // firefox does not work when using css(padding) cause shorthand CSS properties are not guaranteed in jquery
+            '"  data-show-replies="false" data-theme="dark">Tweets by @lelugom</a>');
         });
 
         twttr.ready(function (twttr) {
@@ -443,6 +523,7 @@
         var index = $(entry).attr('id').match(/\d+/g)[0];
         if(index){
           setMainPane($('#' + index).clone());
+          $("#mainPane").append($("#postsList").clone());
         }
       }
 
@@ -450,12 +531,22 @@
       function setMainPane(element){
         $("#mainPane").empty();
         $("#mainPane").append(element);
+        // Update background image layout
         $("body").css("background-size", "cover");
-        // Fix main panel height according to viewport height
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+
+        setHeight($("#postsIndex"));
+        setHeight($("#readList"));
+      }
+
+      // Set height of the element according to viewport height
+      function setHeight(element){
         var paneHeight = $(window).height()
           - parseInt($("#mainPane").css("margin-top"));
-        $(".index").height(paneHeight - parseInt($(".index").css("margin-bottom"))
-          - 2 * parseInt($(".index").css("padding-bottom")));
+        var height = paneHeight -
+          parseInt(element.css("margin-bottom"))
+          - 2 * parseInt(element.css("padding-bottom"));
+        element.height(height);
       }
     </script>
   </body>
