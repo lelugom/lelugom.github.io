@@ -21,6 +21,9 @@
         text-align: center !important;
         color: #5882FA !important;
       }
+      h3 {
+        text-align: center !important;
+      }
       img {
         max-width: 100%;
         max-height: 100%;
@@ -58,6 +61,12 @@
       }
       .twitter-follow-button {
           margin: 10px 10px 0 10px;
+      }
+      .timeline {
+        margin: 10px 0 5px 0;
+      }
+      .container {
+        padding: 0;
       }
     </style>
   </head>
@@ -139,6 +148,8 @@
         <p class="list-group-item-text">A novel written by Nobel prize winner Albert Camus, it's a vivid story developed in the Algerian city of Oran. The book depicts the human nature in difficult situations of life and the different reactions that people have when they face a harsh environment. Throughout the prose, you will connect to the different emotions of the situation, grow your reflection capabilities and identify the strengths of the characters. <br/>&nbsp;</p>
       </a>
     </div>
+
+    <div class="hidden" id="finInfo"></div>
 
     <!-- Posts -->
     <div class = "hidden" id="hiddenPane">
@@ -411,6 +422,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="fin.js"></script></body>
     <script type="text/javascript">
       'use strict';
       var backgroundImage =
@@ -476,6 +488,10 @@
       if(reference && reference.length){
         if(reference[0] === '#readList'){
           setMainPane($(reference[0]).clone().removeClass("hidden"));
+        } else if(reference[0] === '#finInfo'){
+          setMainPane($(reference[0]).clone().removeClass("hidden"));
+          $("body").css("background-image", '');
+          $("body").css("background-color", '#a2bccc');
         } else if($(reference[0]).length){
           // link should be a blog post reference
           loadPost(reference[0]);
@@ -544,11 +560,8 @@
             '"  data-show-replies="false" data-theme="dark">Tweets by @lelugom</a>');
         });
 
-        twttr.ready(function (twttr) {
-          $("#mainPane").append(timeline);
-          $("body").css("background-size", "auto");
-          twttr.widgets.load($(timeline));
-        });
+        $("#mainPane").append(timeline);
+        $("body").css("background-size", "auto");
       }
 
       // Add selected post to main panel
