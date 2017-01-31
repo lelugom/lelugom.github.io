@@ -106,6 +106,10 @@
       </a>-->
       <p class="lead text-center"><br/>Interesting readings <br/>about technology, finance and self-help</p>
       <p class="lead text-center"></p><!--2017-->
+      <a href="https://play.google.com/store/books/details?id=_i6bDeoCQzsC" class="list-group-item">
+        <h4 class="list-group-item-heading"><br/>Clean Code: A Handbook of Agile Software Craftsmanship<br/>&nbsp;</h4>
+        <p class="list-group-item-text">A must read for anyone involved or interested in software development. Robert Martin, a renowned computer programmer and writer, teach us how to create software that is easy to maintain and extend with new features. He explains how to appropriately name variables, functions, and classes, as well as how to approach the design of functions, classes, and systems. Two chapters are dedicated to the delicate subject of concurrent programming. The author also highlights the importance of good commenting practices and the development of an excellent test suite using Test Driven Development practices. As a reinforcement of good practices, the book includes a chapter explaining the thinking process and the decisions Robert made to refactor an existing Java module according to the principles explained in the book. As maintenance is one of the biggest cost in any software project, it's instrumental to apply author's suggestions in order to generate quality code. <br/>&nbsp;</p>
+      </a>
       <a href="http://openmymind.net/2011/3/28/The-Little-MongoDB-Book/" class="list-group-item">
         <h4 class="list-group-item-heading"><br/>The Little MongoDB Book<br/>&nbsp;</h4>
         <p class="list-group-item-text">One of the most popular implementations of NoSQL systems is MongoDB, which has been increasing in usage as an alternative to relational databases on production systems. Its availability and escalation make it a feasible option for web scale applications, as this database system is part of the MEAN stack - MongoDB, Express, Angular, and NodeJS. The introduction presented by Karl Seguin in this short ebook is a recommended reading for anyone interested in knowing about this kind of database systems. SQL background is recommended, as some of the examples and ideas compare both systems in terms of functionality and components. You can download the book in EPUB or PDF format for free.<br/>&nbsp;</p>
@@ -449,7 +453,6 @@
       }(document, "script", "twitter-wjs"));
 
       // Set some document elements
-      $("body").css("background-image", backgroundImage);
       $(".post").addClass(postClass);
       $(".post").each(function() {
         $(this).find('a').each(function(){
@@ -577,7 +580,8 @@
       function setMainPane(element){
         $("#mainPane").empty();
         $("#mainPane").append(element);
-        // Update background image layout
+        // Update background image
+        $("body").css("background-image", backgroundImage);
         $("body").css("background-size", "cover");
         $("html, body").animate({ scrollTop: 0 }, "slow");
 
